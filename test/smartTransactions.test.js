@@ -484,6 +484,13 @@ test("updateDetectedTransaction allows safe manual corrections", async () => {
       return [[{ id: 10, status: "active" }]];
     }
     if (sql.includes("UPDATE detected_transactions SET")) {
+      assert.ok(sql.includes("AND status IN ('suggested', 'detected')"));
+      assert.deepEqual(values.slice(-2), [77, 42]);
+      assert.ok(sql.includes('amount = ?'));
+      assert.ok(sql.includes('transaction_date = ?'));
+      assert.deepEqual(values.slice(0, 2), ['975.25', '2026-10-19']);
+      fakeItem.amount = values[0];
+      fakeItem.transaction_date = values[1];
       return [{ affectedRows: 1 }];
     }
     throw new Error(`Unexpected query: ${sql}`);
@@ -491,6 +498,8 @@ test("updateDetectedTransaction allows safe manual corrections", async () => {
 
   try {
     const updated = await updateDetectedTransaction(77, 42, {
+      amount: '975.25',
+      transactionDate: '2026-10-19',
       merchantClean: "Swiggy Food Delivery",
       classification: "expense",
       categoryId: 3,
@@ -498,8 +507,41 @@ test("updateDetectedTransaction allows safe manual corrections", async () => {
     });
 
     assert.ok(updated);
+    assert.equal(updated.amount, '975.25');
+    assert.equal(updated.transactionDate, '2026-10-19');
   } finally {
     db.execute = originalExecute;
+  }
+});
+
+test('SMS amount/date corrections reject invalid input, other owners and completed records', async () => {
+  const originalExecute = db.execute;
+  let status = 'suggested';
+  db.execute = async (sql, values) => {
+    assert.ok(sql.includes('WHERE d.id = ? AND d.user_id = ?'));
+    if (values[1] !== 42) return [[]];
+    return [[{ id: 77, user_id: 42, status }]];
+  };
+  try {
+    for (const amount of [0, -1, 'NaN', Infinity, '10000000000']) {
+      await assert.rejects(updateDetectedTransaction(77, 42, { amount }), { statusCode: 422 });
+    }
+    for (const transactionDate of ['2026-02-30', 'bad', '2026-10-19T00:00:00Z']) {
+      await assert.rejects(updateDetectedTransaction(77, 42, { transactionDate }), { statusCode: 422 });
+    }
+    await assert.rejects(updateDetectedTransaction(77, 99, { amount: 1 }), { statusCode: 404 });
+    for (status of ['confirmed', 'rejected']) {
+      await assert.rejects(updateDetectedTransaction(77, 42, { amount: 1 }), { statusCode: 409 });
+    }
+  } finally {
+    db.execute = originalExecute;
+  }
+});
+
+test('SMS HTTP validation accepts valid corrections and rejects invalid amounts and calendar dates', async () => {
+  assert.equal(await runValidation(updateSmartTxValidation, { amount: '975.25', transactionDate: '2026-10-19' }), undefined);
+  for (const payload of [{ amount: 0 }, { amount: -1 }, { amount: 'NaN' }, { amount: '10000000000' }, { transactionDate: '2026-02-30' }, { transactionDate: '2026-10-19T00:00:00Z' }]) {
+    assert.ok(await runValidation(updateSmartTxValidation, payload));
   }
 });
 

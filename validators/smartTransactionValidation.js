@@ -18,6 +18,8 @@ export const smartTxIdValidation = [
 ];
 
 export const updateSmartTxValidation = [
+  body('amount').optional().isFloat({ gt: 0, max: 9999999999.99 }),
+  body('transactionDate').optional().isISO8601({ strict: true }).matches(/^\d{4}-\d{2}-\d{2}$/),
   body("merchantClean")
     .optional()
     .trim()

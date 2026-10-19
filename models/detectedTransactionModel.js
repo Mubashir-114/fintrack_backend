@@ -310,6 +310,17 @@ export const updateDetectedTransaction = async (id, userId, changes = {}) => {
   const updates = [];
   const values = [];
 
+  if (changes.amount !== undefined) {
+    const amount = Number(changes.amount);
+    if (!Number.isFinite(amount) || amount <= 0 || amount > 9999999999.99) throw new AppError('Invalid amount', 422);
+    updates.push('amount = ?'); values.push(amount.toFixed(2));
+  }
+  if (changes.transactionDate !== undefined) {
+    const date = String(changes.transactionDate);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !Number.isFinite(Date.parse(date)) || new Date(date).toISOString().slice(0,10) !== date) throw new AppError('Invalid transaction date', 422);
+    updates.push('transaction_date = ?'); values.push(date);
+  }
+
   if (changes.merchantClean !== undefined) {
     const clean = String(changes.merchantClean).trim();
     if (!clean) throw new AppError("Merchant name cannot be empty", 400);
@@ -355,7 +366,7 @@ export const updateDetectedTransaction = async (id, userId, changes = {}) => {
 
   values.push(id, userId);
   await db.execute(
-    `UPDATE detected_transactions SET ${updates.join(", ")} WHERE id = ? AND user_id = ?`,
+    `UPDATE detected_transactions SET ${updates.join(", ")} WHERE id = ? AND user_id = ? AND status IN ('suggested', 'detected')`,
     values,
   );
 

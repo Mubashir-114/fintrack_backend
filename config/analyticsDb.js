@@ -1,6 +1,7 @@
 import mysql from "mysql2/promise";
 import dotenv from "dotenv";
 import AppError from "../utils/AppError.js";
+import { databaseTls } from "./databaseTls.js";
 
 if (process.env.NODE_ENV !== "test") {
   dotenv.config();
@@ -49,6 +50,7 @@ export const getAnalyticsPool = () => {
   }
 
   analyticsPool = mysql.createPool({
+    ssl: databaseTls(process.env, "ANALYTICS_DB"),
     host,
     port,
     user,

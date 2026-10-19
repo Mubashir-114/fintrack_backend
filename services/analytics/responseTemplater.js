@@ -32,7 +32,7 @@ const formatCurrency = (amount) => {
 };
 
 export const PRIVACY_NOTICE =
-  "Phase 5A analytics analyzed only saved FinTrack records owned by you. No bank accounts, SMS inboxes, or external AI services were accessed.";
+  "FIN analyzes only your authorized saved FinTrack records on the backend. Financial data and questions are blocked from external model providers. FIN cannot access your bank or SMS inbox.";
 
 export const buildProvenance = ({ recordCount = 0, startDate, endDate }) => ({
   recordCount: Number(recordCount),
@@ -199,7 +199,7 @@ export const formatTemplateResponse = ({
       answer:
         refusalMessage ||
         explicitAnswer ||
-        "This query is not supported by FinTrack Phase 5B assistant. Please select from one of the supported financial analytics questions.",
+        "FIN cannot answer that question yet. Please choose one of the supported financial questions.",
       provenance: null,
       privacyNotice: PRIVACY_NOTICE,
       suggestions,
@@ -466,7 +466,7 @@ export const formatTemplateResponse = ({
       } else if (type === "savings_opportunities") {
         answer = `Calculation Methodology for Savings Opportunities: Sourced by evaluating over-budget categories (recovering exact overrun) and discretionary category surges (targeting 50% trimming of recorded increases). All amounts are strictly evidence-based facts.`;
       } else {
-        answer = `Calculation Methodology: All metrics are computed deterministically from your authenticated FinTrack transaction and budget records using exact decimal arithmetic. Zero external AI models, third-party trackers, or bank APIs are used.`;
+        answer = `Calculation Methodology: All metrics are computed deterministically from your authenticated FinTrack transaction and budget records using exact decimal arithmetic. Financial calculations run on the FinTrack backend; records and questions are blocked from external model providers and no bank connection is used.`;
       }
       break;
     }

@@ -1,5 +1,6 @@
 import mysql from "mysql2/promise";
 import dotenv from "dotenv";
+import { databaseTls } from "./databaseTls.js";
 
 import { validateTestDatabaseConfig } from "../utils/configValidation.js";
 
@@ -10,6 +11,7 @@ if (process.env.NODE_ENV === "test") {
 }
 
 const pool = mysql.createPool({
+    ssl: databaseTls(),
     host: process.env.DB_HOST,
     port: Number(process.env.DB_PORT),
     user: process.env.DB_USER,

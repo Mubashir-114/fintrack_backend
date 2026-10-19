@@ -1,4 +1,6 @@
 import express from "express";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -58,10 +60,11 @@ const corsOptions = {
     if (
       !origin ||
       allowedOrigins.includes(origin) ||
+      (process.env.NODE_ENV !== "production" && (
       origin.startsWith("http://localhost:") ||
       origin.startsWith("http://127.0.0.1:") ||
       origin.startsWith("https://localhost:") ||
-      origin.startsWith("https://127.0.0.1:")
+      origin.startsWith("https://127.0.0.1:")))
     ) {
       return callback(null, true);
     }
@@ -93,6 +96,9 @@ app.use(express.json({ limit: process.env.JSON_LIMIT || "1mb" }));
 app.use(express.urlencoded({ extended: true, limit: process.env.JSON_LIMIT || "1mb" }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(limiter);
+app.use("/account-deletion", express.static(path.join(path.dirname(fileURLToPath(import.meta.url)), "public/account-deletion"), {
+  setHeaders(res) { res.set("Cache-Control", "no-store"); },
+}));
 
 // Access logging middleware (path only; query strings are never logged)
 if (process.env.NODE_ENV !== "test") {
@@ -132,6 +138,10 @@ app.get("/health", async (req, res) => {
 });
 
 // App routes
+app.use("/api", (_req, res, next) => {
+  res.set("Cache-Control", "no-store");
+  next();
+});
 app.use("/api/auth", authRoutes);
 app.use("/api/transactions", transactionRoutes);
 app.use("/api/dashboard", dashboardRoutes);
@@ -146,7 +156,7 @@ app.use("/api/goals", goalRoutes);
 app.get("/", (req, res) => {
   res.json({
     success: true,
-    message: "Personal Finance API Running",
+    message: "FinTrack 2.0 Personal Finance API Running",
     data: null,
   });
 });

@@ -1,3 +1,4 @@
+import { getAvatar, saveAvatar, removeAvatar } from '../controllers/avatarController.js';
 import express from "express";
 
 import { register, login, getProfile, updateProfile, changePassword, deleteAccount } from "../controllers/authController.js";
@@ -23,6 +24,10 @@ router.use((_req, res, next) => { res.set("Cache-Control", "no-store"); next(); 
 router.post("/register", credentialLimiter, registerValidation, validate, register);
 
 router.post("/login", credentialLimiter, loginValidation, validate, login);
+
+router.get('/avatar', authMiddleware, getAvatar);
+router.put('/avatar', authMiddleware, credentialLimiter, express.json({ limit: '350kb' }), saveAvatar);
+router.delete('/avatar', authMiddleware, credentialLimiter, removeAvatar);
 
 router.get("/me", authMiddleware, getProfile);
 router.put("/me", authMiddleware, profileValidation, validate, updateProfile);

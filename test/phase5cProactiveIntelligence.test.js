@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
+import "./support/closeTestDbPool.js";
 import analyticsDb from "../config/analyticsDb.js";
 import {
   generateProactiveAlerts,

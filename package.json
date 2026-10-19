@@ -1,7 +1,7 @@
 {
   "name": "personal-finance-manager",
   "version": "1.0.0",
-  "description": "",
+  "description": "FinTrack 2.0 Backend REST API service for personal finance management, budgeting, and financial intelligence analytics",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -9,6 +9,7 @@
     "prod": "node server.js",
     "pm2:start": "pm2 start server.js --name personal-finance-manager",
     "test": "node --import ./config/testEnv.js --test",
+    "test:isolated": "node scripts/verifyAccountSecurity.js --all",
     "audit": "npm audit"
   },
   "keywords": [],

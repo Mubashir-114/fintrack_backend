@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Delete your FinTrack account and associated financial records using your account credentials, without installing the app.">
+<meta name="robots" content="noindex">
+<title>Delete account & data | FinTrack</title>
+<link rel="stylesheet" href="/account-deletion/style.css">
+<script src="/account-deletion/deletion.js" defer></script>
+</head><body><main>
+<a href="/account-deletion/" class="brand" aria-label="FinTrack account deletion home">FinTrack</a>
+<h1>Delete your account & data</h1>
+<p>Use your FinTrack email and current password. You do not need to install the app.</p>
+<p>This permanently removes your profile, accounts, transactions, budgets, savings goals, SMS review records and FIN preferences from the active database. Your bank accounts and phone messages are unaffected.</p>
+<p>Other devices may retain cached copies until signed out. Exported reports remain where you saved them. Backup expiry and any legally required retention must be confirmed by the operator; this action does not certify erasure of backups.</p>
+<form id="deletion-form">
+<label for="email">FinTrack email</label><input id="email" name="email" type="email" autocomplete="username" maxlength="150" required>
+<label for="password">Current password</label><input id="password" name="password" type="password" autocomplete="current-password" maxlength="100" required>
+<label for="confirmation">Type DELETE to confirm permanent deletion</label><input id="confirmation" name="confirmation" autocomplete="off" pattern="DELETE" required>
+<button type="submit">Delete account permanently</button>
+</form>
+<p id="status" role="status" aria-live="polite" tabindex="-1"></p>
+<footer>© <span id="year"></span> FinTrack</footer>
+</main></body></html>

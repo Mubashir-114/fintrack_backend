@@ -17,3 +17,9 @@ export const findUserById = async (id) => {
   const [rows] = await db.execute('SELECT id,name,email,created_at FROM users WHERE id = ?', [id]);
   return rows[0];
 };
+
+// Authentication-only access; middleware removes the hash before exposing req.user.
+export const findAuthUserById = async (id) => {
+  const [rows] = await db.execute('SELECT id,name,email,created_at,password FROM users WHERE id = ?', [id]);
+  return rows[0];
+};

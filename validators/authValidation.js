@@ -1,5 +1,20 @@
 import { body } from "express-validator";
 
+export const profileValidation = [
+  body("name").isString().bail().trim().isLength({ min: 3, max: 100 }),
+  body("email").isString().bail().trim().isEmail().isLength({ max: 150 }),
+];
+export const passwordChangeValidation = [
+  body("currentPassword").isString().bail().isLength({ min: 1, max: 100 }),
+  body("newPassword").isString().bail().isLength({ min: 6, max: 100 })
+    .custom(value => Buffer.byteLength(value, "utf8") <= 72)
+    .withMessage("Password must not exceed 72 UTF-8 bytes"),
+];
+export const deletionValidation = [
+  body("password").isString().bail().isLength({ min: 1, max: 100 }),
+  body("confirmation").equals("DELETE").withMessage("Type DELETE to confirm account deletion"),
+];
+
 export const registerValidation = [
   body("name")
     .trim()
@@ -20,7 +35,10 @@ export const registerValidation = [
     .isString()
     .withMessage("Password must be a string")
     .isLength({ min: 6, max: 100 })
-    .withMessage("Password must be between 6 and 100 characters"),
+    .withMessage("Password must be between 6 and 100 characters")
+    .bail()
+    .custom(value => Buffer.byteLength(value, "utf8") <= 72)
+    .withMessage("Password must not exceed 72 UTF-8 bytes"),
 ];
 
 export const loginValidation = [

@@ -8,6 +8,7 @@ These scripts are ordered by their numeric prefix.
 4. `0004_credit_card_management.sql`
 5. `0005_smart_transactions.sql`
 6. `0006_savings_goals_and_planning.sql`
+7. `0007_user_companion_preferences.sql`
 
 `0001` is only a reconstructed baseline for a new, empty local development
 database. It was derived from the backend access paths at commit `7a91c362`.
@@ -59,6 +60,10 @@ and staged review workflow.
 for deterministic savings tracking and lifecycle management, and the
 `goal_contributions` ledger table for user-scoped allocation tracking.
 Goal contributions do not mutate real account balances or transactions.
+
+`0007` is the Phase 5E additive schema creating the `user_companion_preferences`
+table for persisting FIN Living Financial Companion settings (response style,
+preferred name, animation toggles, priority goal, and focus category) scoped to `user_id`.
 
 Runtime application credentials are intentionally insufficient to apply
 these scripts. Schema setup must use a separately controlled migration/admin
